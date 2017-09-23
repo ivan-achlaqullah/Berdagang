@@ -1,0 +1,6 @@
+requests==2.12.4
+jsonschema==2.5.1
+krakenex==1.0.0
+oauthlib==2.0.4
+requests-oauthlib==0.8.0
+tweepy==3.5.0
