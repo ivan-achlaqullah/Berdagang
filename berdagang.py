@@ -28,14 +28,14 @@ balance = 0.0
 
 ## Cek isi ballance
 def cekdompet():
-    dompet = k.query_private('TradeBalance')
-    global balance
-    balance = float(dompet['result']['eb'])
-    #print('Balance : ' + str(balance))
-    time.sleep(2)
+    if testing == 0:
+        dompet = k.query_private('TradeBalance')
+        global balance
+        balance = float(dompet['result']['eb'])
+        #print('Balance : ' + str(balance))
+        time.sleep(2)
     
-if testing == 0:
-    cekdompet()
+cekdompet()
 
 ## Get OHLC data from kraken
 ohlc = k.query_public('OHLC', req = {'pair': config.pair, 'interval': config.chart_interval})
