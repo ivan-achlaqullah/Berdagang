@@ -25,4 +25,3 @@ if config.testing != 1:
 def tweet(pesan):
     if config.testing != 1:
         apitweet.update_status(pesan)
-    

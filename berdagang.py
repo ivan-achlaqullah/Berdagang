@@ -21,7 +21,7 @@ k.load_key('kraken.key')
 ## Load settings from config.py
 testing = config.testing
 
-## IMPORTANT INT 
+## IMPORTANT INT
 statusPosition = 0 ## 0 = no position, 1 = short, 2 = long
 leverage = config.leverage
 balance = 0.0
@@ -34,7 +34,7 @@ def cekdompet():
         balance = float(dompet['result']['eb'])
         #print('Balance : ' + str(balance))
         time.sleep(2)
-    
+
 cekdompet()
 
 ## Get OHLC data from kraken
@@ -69,12 +69,12 @@ if testing == 0 :
 ## Function to CLOSE open position
 
 def closelong(posisinya) :
-    print(str(ohlc['result']['XETHZUSD'][posisinya][0]) + " " + str(posisinya) + 
+    print(str(ohlc['result']['XETHZUSD'][posisinya][0]) + " " + str(posisinya) +
           " STOP Long : " + ohlc['result']['XETHZUSD'][posisinya][4])
 
     global testing
     if testing == 0:
-        ngetweet.tweet(str(ohlc['result']['XETHZUSD'][posisinya][0]) + " " + str(posisinya) + 
+        ngetweet.tweet(str(ohlc['result']['XETHZUSD'][posisinya][0]) + " " + str(posisinya) +
               " STOP Long : " + ohlc['result']['XETHZUSD'][posisinya][4])
         
         while True:
