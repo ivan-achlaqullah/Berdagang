@@ -23,7 +23,7 @@ testing = config.testing
 
 ## IMPORTANT INT 
 statusPosition = 0 ## 0 = no position, 1 = short, 2 = long
-leverage = 5
+leverage = config.leverage
 balance = 0.0
 
 ## Cek isi ballance
@@ -36,17 +36,17 @@ def cekdompet():
     
 cekdompet()
 
-## Cek chart ETH/USD 15 Menit
-ohlc = k.query_public('OHLC', req = {'pair': 'ETHUSD', 'interval': '15'})
+## Get OHLC data from kraken
+ohlc = k.query_public('OHLC', req = {'pair': config.pair, 'interval': config.chart_interval})
 time.sleep(2)
 #print(ohlc)
 
-## Cek posisi terakhir dari data yang didapat
+## Get the lastets closing price from OHLC
 lastclose = len(ohlc['result']['XETHZUSD'])
 lastclose = lastclose - 1
 #print(lastclose)
 
-## Cek posisi apakah ada open position
+## Check if there is open positions in the account.
 buka = k.query_private('OpenPositions')
 time.sleep(2)
 
@@ -64,7 +64,7 @@ else :
         statusPosition = 1
         #print('short')
 
-## Fungsi buat CLOSE position
+## Function to CLOSE open position
 
 def closelong(posisinya) :
     print(str(ohlc['result']['XETHZUSD'][posisinya][0]) + " " + str(posisinya) + 
@@ -110,7 +110,7 @@ def closeshort(posisinya) :
 
         cekdompet()
         
-## Fungsi buat OPEN position
+## Function to OPEN new position
         
 def bukalong(posisinya) :
     print (str(ohlc['result']['XETHZUSD'][posisinya][0]) + " " + str(posisinya) +
@@ -162,14 +162,14 @@ def bukashort(posisinya) :
 
 #### Strategy Start HERE ####
 
-## definisikan seberapa lama length untuk menghitung MACD
+## Define Lenth to calculate MACD
 fastLength = 12
 slowLength = 26
 signalLength = 9
 veryslowLength = 200
 
 
-## Buat fungsi untuk menghitung SMA
+## Function to calculate SMA
 def sma(posisi,banyak):
     tetsx = 0
     for x in range(banyak):
@@ -193,7 +193,7 @@ def berhitung(posisinya):
     
     #print(str(posisinya)+ " " + str(statusPosition))
     
-    ## Sekarang hitung Moving Averagenya SEBELUM
+    ## Calculate Moving Average BEFORE the current bar
     fastMA = sma(posisinya-1, fastLength)
     slowMA = sma(posisinya-1, slowLength)
     veryslowMA = sma(posisinya-1, veryslowLength)
@@ -201,7 +201,7 @@ def berhitung(posisinya):
     signal = hitungsignal(posisinya-1)
     hist_old = macd - signal
 
-    ## Sekarang hitung Moving Averagenya SESUDAH
+    ## Calculate current Moving Average
     fastMA = sma(posisinya, fastLength)
     slowMA = sma(posisinya, slowLength)
     veryslowMA = sma(posisinya, veryslowLength)
@@ -210,7 +210,7 @@ def berhitung(posisinya):
     hist = macd - signal
     
 
-    ## Cek apakah crossover, buka posisi Long
+    ## If crossover, open LONG
     if hist_old < 0 :
         if hist > 0 :
             if macd > 0 :
@@ -224,7 +224,7 @@ def berhitung(posisinya):
                             statusPosition = 2
                             bukalong(posisinya)
 
-    ## Cek apakah crossunder, buka posisi short
+    ## If crossunder, open SHORT
     if hist_old > 0 :
         if hist < 0 :
             if macd < 0 :
@@ -240,17 +240,16 @@ def berhitung(posisinya):
 
 
                             
-## Buat cek, jika testing maka akan jalan ratusan kali
-## Jika tidak, maka akan jalan sekali + eksekusi order
+## Decide whatever to do Backtesting, or start trading normaly.
 
 if testing == 0:
-    berhitung(lastclose-1) ## Jika bukan test
+    berhitung(lastclose-1)
 else :
-    statusPosition = 0 ## Jika sedang test
+    statusPosition = 0
     print('Backtest Start !!!')
     for x in range(lastclose - 200):
         cobahitung = x + 200
         berhitung(cobahitung)
         
-## Berikan tanda bahwa perhitungan sudah selesai
+## Give indication if all calculation are done
 print("------------------------DONE------------------------")

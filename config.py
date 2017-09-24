@@ -11,3 +11,8 @@ testing = 1
 ## Config value for testing :
 ## 0 = Send Trade Order to Kraken, and when it does, tweet it.
 ## 1 = Backtest using OHLC provided from Kraken
+
+pair = 'ETHUSD'
+chart_interval = '15' ## Interval in minutes
+
+leverage = 5
