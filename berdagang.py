@@ -5,8 +5,8 @@ Created on Thu Sep 14 16:36:27 2017
 @author: Ivan Achlaqullah
 """
 
-## Bersiap.py, bot pengganda uang buatan Ivan Achlaqullah ##
-## AKA trading bot cryptoasset di Kraken
+## Berdagang.py, Cryptocurrency Trading Bot with Automatic Tweet Support##
+## Made by Ivan Achlaqullah
 
 import time
 import krakenex
@@ -18,19 +18,13 @@ import ngetweet  ## Skrip integrasi twitter
 k = krakenex.API()
 k.load_key('kraken.key')
 
-## Load pengaturan dari config.py
+## Load settings from config.py
 testing = config.testing
 
 ## IMPORTANT INT 
-statusPosition = 0 ## 0 = gak ada, 1 = short, 2 = long
+statusPosition = 0 ## 0 = no position, 1 = short, 2 = long
 leverage = 5
 balance = 0.0
-
-## definisikan seberapa lama length untuk menghitung MACD
-fastLength = 12
-slowLength = 26
-signalLength = 9
-veryslowLength = 200
 
 ## Cek isi ballance
 def cekdompet():
@@ -51,22 +45,6 @@ time.sleep(2)
 lastclose = len(ohlc['result']['XETHZUSD'])
 lastclose = lastclose - 1
 #print(lastclose)
-
-## Buat fungsi untuk menghitung SMA
-def sma(posisi,banyak):
-    tetsx = 0
-    for x in range(banyak):
-        tetsx = tetsx + float(ohlc['result']['XETHZUSD'][posisi - x][4])
-    tetsx = tetsx / banyak
-    return tetsx
-
-def hitungsignal(posisi):
-    hasilsignal = 0
-    for x in range(signalLength):
-        hasilsignal = hasilsignal + sma(posisi - x, fastLength) - sma(posisi - x, slowLength)
-    hasilsignal = hasilsignal / signalLength
-    return hasilsignal
-
 
 ## Cek posisi apakah ada open position
 buka = k.query_private('OpenPositions')
@@ -181,8 +159,32 @@ def bukashort(posisinya) :
             time.sleep(1)
             if len(beli['error']) == 0:
                 break
+
+#### Strategy Start HERE ####
+
+## definisikan seberapa lama length untuk menghitung MACD
+fastLength = 12
+slowLength = 26
+signalLength = 9
+veryslowLength = 200
+
+
+## Buat fungsi untuk menghitung SMA
+def sma(posisi,banyak):
+    tetsx = 0
+    for x in range(banyak):
+        tetsx = tetsx + float(ohlc['result']['XETHZUSD'][posisi - x][4])
+    tetsx = tetsx / banyak
+    return tetsx
+
+def hitungsignal(posisi):
+    hasilsignal = 0
+    for x in range(signalLength):
+        hasilsignal = hasilsignal + sma(posisi - x, fastLength) - sma(posisi - x, slowLength)
+    hasilsignal = hasilsignal / signalLength
+    return hasilsignal
             
-## Main logic untuk perhitungan
+## Main logic for strategy
 
 def berhitung(posisinya):
     
