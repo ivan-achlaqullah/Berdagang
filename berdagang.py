@@ -34,7 +34,8 @@ def cekdompet():
     #print('Balance : ' + str(balance))
     time.sleep(2)
     
-cekdompet()
+if testing == 0:
+    cekdompet()
 
 ## Get OHLC data from kraken
 ohlc = k.query_public('OHLC', req = {'pair': config.pair, 'interval': config.chart_interval})
@@ -47,22 +48,23 @@ lastclose = lastclose - 1
 #print(lastclose)
 
 ## Check if there is open positions in the account.
-buka = k.query_private('OpenPositions')
-time.sleep(2)
-
-if len(buka['result']) == 0 :
-    statusPosition = 0
-else :
-    bukastatusid = ''
-    for key, value in buka['result'].items() :
-        bukastatusid  = key
-        
-    if buka['result'][bukastatusid]['type'] == 'buy':
-        statusPosition = 2
-        #print('long')
-    if buka['result'][bukastatusid]['type'] == 'sell':
-        statusPosition = 1
-        #print('short')
+if testing == 0 :
+    buka = k.query_private('OpenPositions')
+    time.sleep(2)
+    
+    if len(buka['result']) == 0 :
+        statusPosition = 0
+    else :
+        bukastatusid = ''
+        for key, value in buka['result'].items() :
+            bukastatusid  = key
+            
+        if buka['result'][bukastatusid]['type'] == 'buy':
+            statusPosition = 2
+            #print('long')
+        if buka['result'][bukastatusid]['type'] == 'sell':
+            statusPosition = 1
+            #print('short')
 
 ## Function to CLOSE open position
 

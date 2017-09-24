@@ -8,18 +8,21 @@ Script for tweeting what the bot are doing
 """
 
 import tweepy
+import config
 
 ## Insert twitter api
 CONSUMER_KEY = 'XXXXXXXXXXXXXXXXXXXXXXXXX'
 CONSUMER_SECRET = 'XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX'
 ACCESS_KEY = 'XXXXXXXXX-XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX'
-ACCESS_SECRET = 'wXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX'
+ACCESS_SECRET = 'XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX'
 
-## Load key 
-auth = tweepy.OAuthHandler(CONSUMER_KEY,CONSUMER_SECRET)
-auth.set_access_token(ACCESS_KEY,ACCESS_SECRET)
-apitweet = tweepy.API(auth)
+## Load key, only load if not in testing
+if config.testing != 1:
+    auth = tweepy.OAuthHandler(CONSUMER_KEY,CONSUMER_SECRET)
+    auth.set_access_token(ACCESS_KEY,ACCESS_SECRET)
+    apitweet = tweepy.API(auth)
 
 def tweet(pesan):
-    apitweet.update_status(pesan)
+    if config.testing != 1:
+        apitweet.update_status(pesan)
     
