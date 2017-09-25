@@ -41,7 +41,7 @@ Please note: While you may use your personal account for this, don't do it. Make
 5. Fill the description, and click "Create your Twitter application"
 6. Under Permmissions Tab, please make sure you have Read and Write access
 7. In "Keys and Access Tokens", click "Create my access token"
-8. Open ngetweet.py, and insert your Twitter API Key
+8. Open "ngetweet.py", and insert your Twitter API Key
 
 ## Edit config.py
 
@@ -57,10 +57,10 @@ Next, you might change how many leverage you will use.
 leverage = 5
 ~~~
 
-Finally, you can change testing value to 0 so the bot will actualy place order. The default is 1, which mean it always backtest from the chart data.
+Change testing value to 0 so the bot will actualy place order. The default is 1, which mean it always backtest from the chart data.
 
 ~~~python
-testing = 1
+testing = 0
 ## Config value for testing :
 ## 0 = Send Trade Order to Kraken, and when it does, tweet it.
 ## 1 = Backtest using OHLC provided from Kraken
