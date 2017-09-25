@@ -12,7 +12,7 @@ testing = 1
 ## 0 = Send Trade Order to Kraken, and when it does, tweet it.
 ## 1 = Backtest using OHLC provided from Kraken
 
-pair = 'ETHUSD'
-chart_interval = '15' ## Interval in minutes
+pair = 'XBTUSD' # Trading Pair name, full list: https://www.kraken.com/help/fees
+chart_interval = '60' ## Interval in minutes
 
 leverage = 5

@@ -40,12 +40,16 @@ cekdompet()
 ## Get OHLC data from kraken
 ohlc = k.query_public('OHLC', req = {'pair': config.pair, 'interval': config.chart_interval})
 time.sleep(2)
-#print(ohlc)
+
+## Get offical trading pair name from kraken
+tpair = ''
+for key, value in ohlc['result'].items():
+    if key != 'last':
+        tpair = key
 
 ## Get the lastets closing price from OHLC
-lastclose = len(ohlc['result']['XETHZUSD'])
+lastclose = len(ohlc['result'][tpair])
 lastclose = lastclose - 1
-#print(lastclose)
 
 ## Check if there is open positions in the account.
 if testing == 0 :
@@ -69,17 +73,17 @@ if testing == 0 :
 ## Function to CLOSE open position
 
 def closelong(posisinya) :
-    print(str(ohlc['result']['XETHZUSD'][posisinya][0]) + " " + str(posisinya) +
-          " STOP Long : " + ohlc['result']['XETHZUSD'][posisinya][4])
+    print(str(ohlc['result'][tpair][posisinya][0]) + " " + str(posisinya) +
+          " STOP Long : " + ohlc['result'][tpair][posisinya][4])
 
     global testing
     if testing == 0:
-        ngetweet.tweet(str(ohlc['result']['XETHZUSD'][posisinya][0]) + " " + str(posisinya) +
-              " STOP Long : " + ohlc['result']['XETHZUSD'][posisinya][4])
+        ngetweet.tweet(str(ohlc['result'][tpair][posisinya][0]) + " " + str(posisinya) +
+              " STOP Long : " + ohlc['result'][tpair][posisinya][4])
         
         while True:
             beli = k.query_private('AddOrder',
-                            {'pair': 'ETHUSD',
+                            {'pair': tpair,
                              'type': 'sell',
                              'ordertype': 'market',
                              'volume': '0',
@@ -91,17 +95,17 @@ def closelong(posisinya) :
         cekdompet()
         
 def closeshort(posisinya) :
-    print(str(ohlc['result']['XETHZUSD'][posisinya][0]) + " " + str(posisinya) + 
-          " STOP Short : " + ohlc['result']['XETHZUSD'][posisinya][4])
+    print(str(ohlc['result'][tpair][posisinya][0]) + " " + str(posisinya) + 
+          " STOP Short : " + ohlc['result'][tpair][posisinya][4])
 
     global testing
     if testing == 0:
-        ngetweet.tweet(str(ohlc['result']['XETHZUSD'][posisinya][0]) + " " + str(posisinya) + 
-              " STOP Short : " + ohlc['result']['XETHZUSD'][posisinya][4])
+        ngetweet.tweet(str(ohlc['result'][tpair][posisinya][0]) + " " + str(posisinya) + 
+              " STOP Short : " + ohlc['result'][tpair][posisinya][4])
     
         while True:
             beli = k.query_private('AddOrder',
-                            {'pair': 'ETHUSD',
+                            {'pair': tpair,
                              'type': 'buy',
                              'ordertype': 'market',
                              'volume': '0',
@@ -115,21 +119,21 @@ def closeshort(posisinya) :
 ## Function to OPEN new position
         
 def bukalong(posisinya) :
-    print (str(ohlc['result']['XETHZUSD'][posisinya][0]) + " " + str(posisinya) +
-           " OPEN Long, Price : " + ohlc['result']['XETHZUSD'][posisinya][4])
+    print (str(ohlc['result'][tpair][posisinya][0]) + " " + str(posisinya) +
+           " OPEN Long, Price : " + ohlc['result'][tpair][posisinya][4])
 
     global testing
     global balance
     global leverage
     
     if testing == 0:
-        ngetweet.tweet(str(ohlc['result']['XETHZUSD'][posisinya][0]) + " " + str(posisinya) +
-               " OPEN Long, Price : " + ohlc['result']['XETHZUSD'][posisinya][4])
+        ngetweet.tweet(str(ohlc['result'][tpair][posisinya][0]) + " " + str(posisinya) +
+               " OPEN Long, Price : " + ohlc['result'][tpair][posisinya][4])
         
         while True:
-            harga = (balance * 0.95 * leverage) / float(ohlc['result']['XETHZUSD'][posisinya][4])
+            harga = (balance * 0.95 * leverage) / float(ohlc['result'][tpair][posisinya][4])
             beli = k.query_private('AddOrder',
-                            {'pair': 'ETHUSD',
+                            {'pair': tpair,
                              'type': 'buy',
                              'ordertype': 'market',
                              'volume': str(harga),
@@ -139,21 +143,21 @@ def bukalong(posisinya) :
                 break
 
 def bukashort(posisinya) :
-    print (str(ohlc['result']['XETHZUSD'][posisinya][0]) + " " + str(posisinya) +
-           " OPEN Short, Price : " + ohlc['result']['XETHZUSD'][posisinya][4])
+    print (str(ohlc['result'][tpair][posisinya][0]) + " " + str(posisinya) +
+           " OPEN Short, Price : " + ohlc['result'][tpair][posisinya][4])
     
     global testing
     global balance
     global leverage
     
     if testing == 0:
-        ngetweet.tweet(str(ohlc['result']['XETHZUSD'][posisinya][0]) + " " + str(posisinya) +
-               " OPEN Short, Price : " + ohlc['result']['XETHZUSD'][posisinya][4])
+        ngetweet.tweet(str(ohlc['result'][tpair][posisinya][0]) + " " + str(posisinya) +
+               " OPEN Short, Price : " + ohlc['result'][tpair][posisinya][4])
         
         while True:
-            harga = (balance * 0.95 * leverage) / float(ohlc['result']['XETHZUSD'][posisinya][4])
+            harga = (balance * 0.95 * leverage) / float(ohlc['result'][tpair][posisinya][4])
             beli = k.query_private('AddOrder',
-                            {'pair': 'ETHUSD',
+                            {'pair': tpair,
                              'type': 'sell',
                              'ordertype': 'market',
                              'volume': str(harga),
@@ -175,7 +179,7 @@ veryslowLength = 200
 def sma(posisi,banyak):
     tetsx = 0
     for x in range(banyak):
-        tetsx = tetsx + float(ohlc['result']['XETHZUSD'][posisi - x][4])
+        tetsx = tetsx + float(ohlc['result'][tpair][posisi - x][4])
     tetsx = tetsx / banyak
     return tetsx
 
@@ -217,7 +221,7 @@ def berhitung(posisinya):
         if hist > 0 :
             if macd > 0 :
                 if fastMA > slowMA :
-                    if float(ohlc['result']['XETHZUSD'][posisinya - slowLength][4]) > veryslowMA :
+                    if float(ohlc['result'][tpair][posisinya - slowLength][4]) > veryslowMA :
                         ## STOP SHORT
                         if statusPosition == 1:
                             closeshort(posisinya)
@@ -231,7 +235,7 @@ def berhitung(posisinya):
         if hist < 0 :
             if macd < 0 :
                 if fastMA < slowMA :
-                    if float(ohlc['result']['XETHZUSD'][posisinya - slowLength][4]) < veryslowMA :
+                    if float(ohlc['result'][tpair][posisinya - slowLength][4]) < veryslowMA :
                         ## STOP LONG
                         if statusPosition == 2:
                             closelong(posisinya)
