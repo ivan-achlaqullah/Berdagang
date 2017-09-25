@@ -55,14 +55,14 @@ lastclose = lastclose - 1
 if testing == 0 :
     buka = k.query_private('OpenPositions')
     time.sleep(2)
-    
+
     if len(buka['result']) == 0 :
         statusPosition = 0
     else :
         bukastatusid = ''
         for key, value in buka['result'].items() :
             bukastatusid  = key
-            
+
         if buka['result'][bukastatusid]['type'] == 'buy':
             statusPosition = 2
             #print('long')
@@ -80,7 +80,7 @@ def closelong(posisinya) :
     if testing == 0:
         ngetweet.tweet(str(ohlc['result'][tpair][posisinya][0]) + " " + str(posisinya) +
               " STOP Long : " + ohlc['result'][tpair][posisinya][4])
-        
+
         while True:
             beli = k.query_private('AddOrder',
                             {'pair': tpair,
@@ -91,18 +91,18 @@ def closelong(posisinya) :
             time.sleep(2)
             if len(beli['error']) == 0:
                 break
-        
+
         cekdompet()
-        
+
 def closeshort(posisinya) :
-    print(str(ohlc['result'][tpair][posisinya][0]) + " " + str(posisinya) + 
+    print(str(ohlc['result'][tpair][posisinya][0]) + " " + str(posisinya) +
           " STOP Short : " + ohlc['result'][tpair][posisinya][4])
 
     global testing
     if testing == 0:
-        ngetweet.tweet(str(ohlc['result'][tpair][posisinya][0]) + " " + str(posisinya) + 
+        ngetweet.tweet(str(ohlc['result'][tpair][posisinya][0]) + " " + str(posisinya) +
               " STOP Short : " + ohlc['result'][tpair][posisinya][4])
-    
+
         while True:
             beli = k.query_private('AddOrder',
                             {'pair': tpair,
@@ -115,9 +115,9 @@ def closeshort(posisinya) :
                 break
 
         cekdompet()
-        
+
 ## Function to OPEN new position
-        
+
 def bukalong(posisinya) :
     print (str(ohlc['result'][tpair][posisinya][0]) + " " + str(posisinya) +
            " OPEN Long, Price : " + ohlc['result'][tpair][posisinya][4])
@@ -125,11 +125,11 @@ def bukalong(posisinya) :
     global testing
     global balance
     global leverage
-    
+
     if testing == 0:
         ngetweet.tweet(str(ohlc['result'][tpair][posisinya][0]) + " " + str(posisinya) +
                " OPEN Long, Price : " + ohlc['result'][tpair][posisinya][4])
-        
+
         while True:
             harga = (balance * 0.95 * leverage) / float(ohlc['result'][tpair][posisinya][4])
             beli = k.query_private('AddOrder',
@@ -145,15 +145,15 @@ def bukalong(posisinya) :
 def bukashort(posisinya) :
     print (str(ohlc['result'][tpair][posisinya][0]) + " " + str(posisinya) +
            " OPEN Short, Price : " + ohlc['result'][tpair][posisinya][4])
-    
+
     global testing
     global balance
     global leverage
-    
+
     if testing == 0:
         ngetweet.tweet(str(ohlc['result'][tpair][posisinya][0]) + " " + str(posisinya) +
                " OPEN Short, Price : " + ohlc['result'][tpair][posisinya][4])
-        
+
         while True:
             harga = (balance * 0.95 * leverage) / float(ohlc['result'][tpair][posisinya][4])
             beli = k.query_private('AddOrder',
@@ -189,16 +189,16 @@ def hitungsignal(posisi):
         hasilsignal = hasilsignal + sma(posisi - x, fastLength) - sma(posisi - x, slowLength)
     hasilsignal = hasilsignal / signalLength
     return hasilsignal
-            
+
 ## Main logic for strategy
 
 def berhitung(posisinya):
-    
+
     ## ITS GLOBAL PYTHON !!!!
     global statusPosition
-    
+
     #print(str(posisinya)+ " " + str(statusPosition))
-    
+
     ## Calculate Moving Average BEFORE the current bar
     fastMA = sma(posisinya-1, fastLength)
     slowMA = sma(posisinya-1, slowLength)
@@ -214,7 +214,7 @@ def berhitung(posisinya):
     macd = fastMA - slowMA
     signal = hitungsignal(posisinya)
     hist = macd - signal
-    
+
 
     ## If crossover, open LONG
     if hist_old < 0 :
@@ -245,7 +245,7 @@ def berhitung(posisinya):
                             bukashort(posisinya)
 
 
-                            
+
 ## Decide whatever to do Backtesting, or start trading normaly.
 
 if testing == 0:
@@ -256,6 +256,6 @@ else :
     for x in range(lastclose - 200):
         cobahitung = x + 200
         berhitung(cobahitung)
-        
+
 ## Give indication if all calculation are done
 print("------------------------DONE------------------------")
