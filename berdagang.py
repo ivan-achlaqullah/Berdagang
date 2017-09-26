@@ -11,9 +11,12 @@ Created on Thu Sep 14 16:36:27 2017
 import time
 import krakenex
 
-## Import script buatan sendiri
+## Import another script
 import config    ## Skrip pengaturan
 import ngetweet  ## Skrip integrasi twitter
+
+## Import trading strategy
+import strategy.smamacd as strategy
 
 k = krakenex.API()
 k.load_key('kraken.key')
@@ -76,6 +79,9 @@ def closelong(posisinya) :
     print(str(ohlc['result'][tpair][posisinya][0]) + " " + str(posisinya) +
           " STOP Long : " + ohlc['result'][tpair][posisinya][4])
 
+    global statusPosition
+    statusPosition = 0
+
     global testing
     if testing == 0:
         ngetweet.tweet(str(ohlc['result'][tpair][posisinya][0]) + " " + str(posisinya) +
@@ -98,6 +104,9 @@ def closeshort(posisinya) :
     print(str(ohlc['result'][tpair][posisinya][0]) + " " + str(posisinya) +
           " STOP Short : " + ohlc['result'][tpair][posisinya][4])
 
+    global statusPosition
+    statusPosition = 0
+
     global testing
     if testing == 0:
         ngetweet.tweet(str(ohlc['result'][tpair][posisinya][0]) + " " + str(posisinya) +
@@ -119,6 +128,11 @@ def closeshort(posisinya) :
 ## Function to OPEN new position
 
 def bukalong(posisinya) :
+
+    global statusPosition
+    if statusPosition == 1:
+        closeshort(posisinya)
+
     print (str(ohlc['result'][tpair][posisinya][0]) + " " + str(posisinya) +
            " OPEN Long, Price : " + ohlc['result'][tpair][posisinya][4])
 
@@ -142,7 +156,14 @@ def bukalong(posisinya) :
             if len(beli['error']) == 0:
                 break
 
+    statusPosition = 2
+
 def bukashort(posisinya) :
+
+    global statusPosition
+    if statusPosition == 2:
+        closelong(posisinya)
+
     print (str(ohlc['result'][tpair][posisinya][0]) + " " + str(posisinya) +
            " OPEN Short, Price : " + ohlc['result'][tpair][posisinya][4])
 
@@ -166,96 +187,32 @@ def bukashort(posisinya) :
             if len(beli['error']) == 0:
                 break
 
-#### Strategy Start HERE ####
+    statusPosition = 1
 
-## Define Lenth to calculate MACD
-fastLength = 12
-slowLength = 26
-signalLength = 9
-veryslowLength = 200
+## Act based on strategy result
+def decide(order, pos):
 
-
-## Function to calculate SMA
-def sma(posisi,banyak):
-    tetsx = 0
-    for x in range(banyak):
-        tetsx = tetsx + float(ohlc['result'][tpair][posisi - x][4])
-    tetsx = tetsx / banyak
-    return tetsx
-
-def hitungsignal(posisi):
-    hasilsignal = 0
-    for x in range(signalLength):
-        hasilsignal = hasilsignal + sma(posisi - x, fastLength) - sma(posisi - x, slowLength)
-    hasilsignal = hasilsignal / signalLength
-    return hasilsignal
-
-## Main logic for strategy
-
-def berhitung(posisinya):
-
-    ## ITS GLOBAL PYTHON !!!!
     global statusPosition
 
-    #print(str(posisinya)+ " " + str(statusPosition))
-
-    ## Calculate Moving Average BEFORE the current bar
-    fastMA = sma(posisinya-1, fastLength)
-    slowMA = sma(posisinya-1, slowLength)
-    veryslowMA = sma(posisinya-1, veryslowLength)
-    macd = fastMA - slowMA
-    signal = hitungsignal(posisinya-1)
-    hist_old = macd - signal
-
-    ## Calculate current Moving Average
-    fastMA = sma(posisinya, fastLength)
-    slowMA = sma(posisinya, slowLength)
-    veryslowMA = sma(posisinya, veryslowLength)
-    macd = fastMA - slowMA
-    signal = hitungsignal(posisinya)
-    hist = macd - signal
-
-
-    ## If crossover, open LONG
-    if hist_old < 0 :
-        if hist > 0 :
-            if macd > 0 :
-                if fastMA > slowMA :
-                    if float(ohlc['result'][tpair][posisinya - slowLength][4]) > veryslowMA :
-                        ## STOP SHORT
-                        if statusPosition == 1:
-                            closeshort(posisinya)
-                        ## CALL LONG
-                        if statusPosition != 2:
-                            statusPosition = 2
-                            bukalong(posisinya)
-
-    ## If crossunder, open SHORT
-    if hist_old > 0 :
-        if hist < 0 :
-            if macd < 0 :
-                if fastMA < slowMA :
-                    if float(ohlc['result'][tpair][posisinya - slowLength][4]) < veryslowMA :
-                        ## STOP LONG
-                        if statusPosition == 2:
-                            closelong(posisinya)
-                        ## CALL SHORT
-                        if statusPosition != 1:
-                            statusPosition = 1
-                            bukashort(posisinya)
-
-
+    if order == 'long':
+        if statusPosition != 2:
+            bukalong(pos)
+    elif order == 'short':
+        if statusPosition != 1:
+            bukashort(pos)
 
 ## Decide whatever to do Backtesting, or start trading normaly.
 
 if testing == 0:
-    berhitung(lastclose-1)
+    order1 = strategy.calculate(lastclose-1, tpair, ohlc)
+    decide(order1, lastclose-1)
 else :
     statusPosition = 0
     print('Backtest Start !!!')
     for x in range(lastclose - 200):
         cobahitung = x + 200
-        berhitung(cobahitung)
+        order1 = strategy.calculate(cobahitung, tpair, ohlc)
+        decide(order1, cobahitung)
 
 ## Give indication if all calculation are done
 print("------------------------DONE------------------------")
