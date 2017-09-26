@@ -2,7 +2,7 @@
 """
 Created on Sun Sep 24 19:19:32 2017
 
-@author: Komputer Rumah
+@author: Ivan Aclaqullah
 """
 
 from berdagang import *
