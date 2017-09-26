@@ -1,6 +1,6 @@
 # Berdagang
 
-[![Build Status](https://travis-ci.org/ivan-achlaqullah/Berdagang.svg?branch=master)](https://travis-ci.org/ivan-achlaqullah/Berdagang)
+[![Build Status](https://travis-ci.org/ivan-achlaqullah/Berdagang.svg?branch=master)](https://travis-ci.org/ivan-achlaqullah/Berdagang) [![Codacy Badge](https://api.codacy.com/project/badge/Grade/5444cb09aadf418ba6fde2eafa17f736)](https://www.codacy.com/app/ivan9aks2011/Berdagang?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=ivan-achlaqullah/Berdagang&amp;utm_campaign=Badge_Grade)
 
 Berdagang is Cryptocurrency trading bot using Python, and using Twitter to tweet it's decision. Currently only support Kraken Exchange. Licensed under MIT License.
 
