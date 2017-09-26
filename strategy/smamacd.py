@@ -13,7 +13,6 @@ slowLength = 26
 signalLength = 9
 veryslowLength = 200
 
-
 ## Function to calculate SMA
 def sma(posisi, banyak, tpair, ohlc):
     tetsx = 0
@@ -31,7 +30,7 @@ def hitungsignal(posisi, tpair, ohlc):
 
 ## Main logic for strategy
 
-def calculate(posisinya, tpair, ohlc, statusPosition):
+def calculate(posisinya, tpair, ohlc):
 
     ## Calculate Moving Average BEFORE the current bar
     fastMA = sma(posisinya-1, fastLength, tpair, ohlc)
@@ -56,28 +55,17 @@ def calculate(posisinya, tpair, ohlc, statusPosition):
             if macd > 0 :
                 if fastMA > slowMA :
                     if float(ohlc['result'][tpair][posisinya - slowLength][4]) > veryslowMA :
-                        ## STOP SHORT
-                        if statusPosition == 1:
-                            #closeshort(posisinya)
-                            print('Debug: Stop Short')
                         ## CALL LONG
-                        if statusPosition != 2:
-                            statusPosition = 2
-                            #bukalong(posisinya)
-                            print('Debug: Open Long')
+                        return 'long'
 
     ## If crossunder, open SHORT
-    if hist_old > 0 :
+    elif hist_old > 0 :
         if hist < 0 :
             if macd < 0 :
                 if fastMA < slowMA :
                     if float(ohlc['result'][tpair][posisinya - slowLength][4]) < veryslowMA :
-                        ## STOP LONG
-                        if statusPosition == 2:
-                            #closelong(posisinya)
-                            print('Debug: Stop Long')
                         ## CALL SHORT
-                        if statusPosition != 1:
-                            statusPosition = 1
-                            #bukashort(posisinya)
-                            print('Debug: Open Short')
+                        return 'short'
+
+    else:
+        return 'none'

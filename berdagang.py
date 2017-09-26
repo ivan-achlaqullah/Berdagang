@@ -79,6 +79,9 @@ def closelong(posisinya) :
     print(str(ohlc['result'][tpair][posisinya][0]) + " " + str(posisinya) +
           " STOP Long : " + ohlc['result'][tpair][posisinya][4])
 
+    global statusPosition
+    statusPosition = 0
+
     global testing
     if testing == 0:
         ngetweet.tweet(str(ohlc['result'][tpair][posisinya][0]) + " " + str(posisinya) +
@@ -101,6 +104,9 @@ def closeshort(posisinya) :
     print(str(ohlc['result'][tpair][posisinya][0]) + " " + str(posisinya) +
           " STOP Short : " + ohlc['result'][tpair][posisinya][4])
 
+    global statusPosition
+    statusPosition = 0
+
     global testing
     if testing == 0:
         ngetweet.tweet(str(ohlc['result'][tpair][posisinya][0]) + " " + str(posisinya) +
@@ -122,6 +128,11 @@ def closeshort(posisinya) :
 ## Function to OPEN new position
 
 def bukalong(posisinya) :
+
+    global statusPosition
+    if statusPosition == 1:
+        closeshort(posisinya)
+
     print (str(ohlc['result'][tpair][posisinya][0]) + " " + str(posisinya) +
            " OPEN Long, Price : " + ohlc['result'][tpair][posisinya][4])
 
@@ -145,7 +156,14 @@ def bukalong(posisinya) :
             if len(beli['error']) == 0:
                 break
 
+    statusPosition = 2
+
 def bukashort(posisinya) :
+
+    global statusPosition
+    if statusPosition == 2:
+        closelong(posisinya)
+
     print (str(ohlc['result'][tpair][posisinya][0]) + " " + str(posisinya) +
            " OPEN Short, Price : " + ohlc['result'][tpair][posisinya][4])
 
@@ -169,16 +187,32 @@ def bukashort(posisinya) :
             if len(beli['error']) == 0:
                 break
 
+    statusPosition = 1
+
+## Act based on strategy result
+def decide(order, pos):
+
+    global statusPosition
+
+    if order == 'long':
+        if statusPosition != 2:
+            bukalong(pos)
+    elif order == 'short':
+        if statusPosition != 1:
+            bukashort(pos)
+
 ## Decide whatever to do Backtesting, or start trading normaly.
 
 if testing == 0:
-    strategy.calculate(lastclose-1, tpair, ohlc, statusPosition)
+    order1 = strategy.calculate(lastclose-1, tpair, ohlc)
+    decide(order1, lastclose-1)
 else :
     statusPosition = 0
     print('Backtest Start !!!')
     for x in range(lastclose - 200):
         cobahitung = x + 200
-        strategy.calculate(cobahitung, tpair, ohlc, statusPosition)
+        order1 = strategy.calculate(cobahitung, tpair, ohlc)
+        decide(order1, cobahitung)
 
 ## Give indication if all calculation are done
 print("------------------------DONE------------------------")
