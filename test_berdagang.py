@@ -14,6 +14,12 @@ def test_cekdompet():
 def test_tweet():
     ngetweet.tweet('test')
 
-def test_berhitung():
-    berhitung(lastclose-1)
-    
+def test_strategy():
+    testorder = strategy.calculate(lastclose-1, tpair, ohlc)
+
+    if testorder == 'none':
+        print('Strategy test succes')
+    if testorder == 'long':
+        print('Strategy test succes')
+    if testorder == 'short':
+        print('Strategy test succes')
