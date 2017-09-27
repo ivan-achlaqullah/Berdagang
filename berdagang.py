@@ -143,9 +143,11 @@ def bukalong(posisinya) :
     if testing == 0:
         ngetweet.tweet(str(ohlc['result'][tpair][posisinya][0]) + " " + str(posisinya) +
                " OPEN Long, Price : " + ohlc['result'][tpair][posisinya][4])
+        
+        ticker = k.query_public('Ticker', req = {'pair': tpair})
 
         while True:
-            harga = (balance * 0.95 * leverage) / float(ohlc['result'][tpair][posisinya][4])
+            harga = (balance * 0.95 * leverage) / float(ticker['result'][tpair]['c'][0])
             beli = k.query_private('AddOrder',
                             {'pair': tpair,
                              'type': 'buy',
@@ -174,9 +176,11 @@ def bukashort(posisinya) :
     if testing == 0:
         ngetweet.tweet(str(ohlc['result'][tpair][posisinya][0]) + " " + str(posisinya) +
                " OPEN Short, Price : " + ohlc['result'][tpair][posisinya][4])
+        
+        ticker = k.query_public('Ticker', req = {'pair': tpair})
 
         while True:
-            harga = (balance * 0.95 * leverage) / float(ohlc['result'][tpair][posisinya][4])
+            harga = (balance * 0.95 * leverage) / float(ticker['result'][tpair]['c'][0])
             beli = k.query_private('AddOrder',
                             {'pair': tpair,
                              'type': 'sell',
