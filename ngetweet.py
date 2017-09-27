@@ -17,11 +17,11 @@ ACCESS_KEY = 'XXXXXXXXX-XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX'
 ACCESS_SECRET = 'XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX'
 
 ## Load key, only load if not in testing
-if config.testing != 1:
+if config.testing != 2:
     auth = tweepy.OAuthHandler(CONSUMER_KEY,CONSUMER_SECRET)
     auth.set_access_token(ACCESS_KEY,ACCESS_SECRET)
     apitweet = tweepy.API(auth)
 
 def tweet(pesan):
-    if config.testing != 1:
+    if config.testing != 2:
         apitweet.update_status(pesan)

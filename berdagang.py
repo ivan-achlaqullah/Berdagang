@@ -31,7 +31,7 @@ balance = 0.0
 
 ## Cek isi ballance
 def cekdompet():
-    if testing == 0:
+    if testing != 2:
         dompet = k.query_private('TradeBalance')
         global balance
         balance = float(dompet['result']['eb'])
@@ -55,7 +55,7 @@ lastclose = len(ohlc['result'][tpair])
 lastclose = lastclose - 1
 
 ## Check if there is open positions in the account.
-if testing == 0 :
+if testing != 2 :
     buka = k.query_private('OpenPositions')
     time.sleep(2)
 
@@ -83,9 +83,12 @@ def closelong(posisinya) :
     statusPosition = 0
 
     global testing
+
+    if testing <= 1:
+        ngetweet.tweet(str(ohlc['result'][tpair][posisinya][0]) + " " + tpair
+                       + " STOP Long : " + ohlc['result'][tpair][posisinya][4])
+
     if testing == 0:
-        ngetweet.tweet(str(ohlc['result'][tpair][posisinya][0]) + " " + tpair +
-              " STOP Long : " + ohlc['result'][tpair][posisinya][4])
 
         while True:
             beli = k.query_private('AddOrder',
@@ -108,9 +111,12 @@ def closeshort(posisinya) :
     statusPosition = 0
 
     global testing
+
+    if testing <= 1:
+        ngetweet.tweet(str(ohlc['result'][tpair][posisinya][0]) + " " + tpair
+                       + " STOP Short : " + ohlc['result'][tpair][posisinya][4])
+
     if testing == 0:
-        ngetweet.tweet(str(ohlc['result'][tpair][posisinya][0]) + " " + tpair +
-              " STOP Short : " + ohlc['result'][tpair][posisinya][4])
 
         while True:
             beli = k.query_private('AddOrder',
@@ -140,9 +146,11 @@ def bukalong(posisinya) :
     global balance
     global leverage
 
+    if testing <= 1:
+        ngetweet.tweet(str(ohlc['result'][tpair][posisinya][0]) + " " + tpair
+                       + " OPEN Long, Price : " + ohlc['result'][tpair][posisinya][4])
+
     if testing == 0:
-        ngetweet.tweet(str(ohlc['result'][tpair][posisinya][0]) + " " + tpair +
-               " OPEN Long, Price : " + ohlc['result'][tpair][posisinya][4])
 
         ticker = k.query_public('Ticker', req = {'pair': tpair})
 
@@ -173,9 +181,11 @@ def bukashort(posisinya) :
     global balance
     global leverage
 
+    if testing <= 1:
+        ngetweet.tweet(str(ohlc['result'][tpair][posisinya][0]) + " " + tpair
+                       + " OPEN Short, Price : " + ohlc['result'][tpair][posisinya][4])
+
     if testing == 0:
-        ngetweet.tweet(str(ohlc['result'][tpair][posisinya][0]) + " " + tpair +
-               " OPEN Short, Price : " + ohlc['result'][tpair][posisinya][4])
 
         ticker = k.query_public('Ticker', req = {'pair': tpair})
 
@@ -207,7 +217,7 @@ def decide(order, pos):
 
 ## Decide whatever to do Backtesting, or start trading normaly.
 
-if testing == 0:
+if testing != 2:
     order1 = strategy.calculate(lastclose-1, tpair, ohlc)
     decide(order1, lastclose-1)
 else :
