@@ -10,16 +10,10 @@ Script for tweeting what the bot are doing
 import tweepy
 import config
 
-## Insert twitter api
-CONSUMER_KEY = 'XXXXXXXXXXXXXXXXXXXXXXXXX'
-CONSUMER_SECRET = 'XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX'
-ACCESS_KEY = 'XXXXXXXXX-XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX'
-ACCESS_SECRET = 'XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX'
-
 ## Load key, only load if not in testing
 if config.testing != 2:
-    auth = tweepy.OAuthHandler(CONSUMER_KEY,CONSUMER_SECRET)
-    auth.set_access_token(ACCESS_KEY,ACCESS_SECRET)
+    auth = tweepy.OAuthHandler(config.CONSUMER_KEY, config.CONSUMER_SECRET)
+    auth.set_access_token(config.ACCESS_KEY, config.ACCESS_SECRET)
     apitweet = tweepy.API(auth)
 
 def tweet(pesan):
