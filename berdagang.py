@@ -84,7 +84,7 @@ def closelong(posisinya) :
 
     global testing
     if testing == 0:
-        ngetweet.tweet(str(ohlc['result'][tpair][posisinya][0]) + " " + str(posisinya) +
+        ngetweet.tweet(str(ohlc['result'][tpair][posisinya][0]) + " " + tpair +
               " STOP Long : " + ohlc['result'][tpair][posisinya][4])
 
         while True:
@@ -109,7 +109,7 @@ def closeshort(posisinya) :
 
     global testing
     if testing == 0:
-        ngetweet.tweet(str(ohlc['result'][tpair][posisinya][0]) + " " + str(posisinya) +
+        ngetweet.tweet(str(ohlc['result'][tpair][posisinya][0]) + " " + tpair +
               " STOP Short : " + ohlc['result'][tpair][posisinya][4])
 
         while True:
@@ -141,7 +141,7 @@ def bukalong(posisinya) :
     global leverage
 
     if testing == 0:
-        ngetweet.tweet(str(ohlc['result'][tpair][posisinya][0]) + " " + str(posisinya) +
+        ngetweet.tweet(str(ohlc['result'][tpair][posisinya][0]) + " " + tpair +
                " OPEN Long, Price : " + ohlc['result'][tpair][posisinya][4])
 
         ticker = k.query_public('Ticker', req = {'pair': tpair})
@@ -174,7 +174,7 @@ def bukashort(posisinya) :
     global leverage
 
     if testing == 0:
-        ngetweet.tweet(str(ohlc['result'][tpair][posisinya][0]) + " " + str(posisinya) +
+        ngetweet.tweet(str(ohlc['result'][tpair][posisinya][0]) + " " + tpair +
                " OPEN Short, Price : " + ohlc['result'][tpair][posisinya][4])
 
         ticker = k.query_public('Ticker', req = {'pair': tpair})
