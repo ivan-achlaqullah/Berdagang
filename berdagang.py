@@ -55,7 +55,10 @@ lastclose = len(ohlc['result'][tpair])
 lastclose = lastclose - 1
 
 ## Check if there is open positions in the account.
-if testing == 0 :
+def cekopenpos():
+
+    global statusPosition
+
     buka = k.query_private('OpenPositions')
     time.sleep(2)
 
@@ -72,6 +75,9 @@ if testing == 0 :
         if buka['result'][bukastatusid]['type'] == 'sell':
             statusPosition = 1
             #print('short')
+
+if testing == 0:
+    cekopenpos()
 
 ## Function to CLOSE open position
 
