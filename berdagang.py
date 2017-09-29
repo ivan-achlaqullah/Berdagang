@@ -150,21 +150,31 @@ def bukalong(posisinya) :
         ngetweet.tweet(str(ohlc['result'][tpair][posisinya][0]) + " " + tpair +
                " OPEN Long, Price : " + ohlc['result'][tpair][posisinya][4])
 
-        ticker = k.query_public('Ticker', req = {'pair': tpair})
-
         while True:
-            harga = (balance * 0.95 * leverage) / float(ticker['result'][tpair]['c'][0])
-            beli = k.query_private('AddOrder',
-                            {'pair': tpair,
-                             'type': 'buy',
-                             'ordertype': 'market',
-                             'volume': str(harga),
-                             'leverage': str(leverage)})
+            ticker = k.query_public('Ticker', req = {'pair': tpair})
             time.sleep(1)
-            if len(beli['error']) == 0:
+
+            while True:
+                harga = (balance * 0.95 * leverage) / float(ticker['result'][tpair]['c'][0])
+                beli = k.query_private('AddOrder',
+                                {'pair': tpair,
+                                 'type': 'buy',
+                                 'ordertype': 'market',
+                                 'volume': str(harga),
+                                 'leverage': str(leverage)})
+                time.sleep(1)
+                if len(beli['error']) == 0:
+                    break
+
+            ## Delay, then recheck with kraken
+            ## Insufficient Margin from kraken are not fun
+            time.sleep(10)
+            cekopenpos()
+            if statusPosition == 2:
                 break
 
-    statusPosition = 2
+    if testing != 0:
+        statusPosition = 2
 
 def bukashort(posisinya) :
 
@@ -183,21 +193,31 @@ def bukashort(posisinya) :
         ngetweet.tweet(str(ohlc['result'][tpair][posisinya][0]) + " " + tpair +
                " OPEN Short, Price : " + ohlc['result'][tpair][posisinya][4])
 
-        ticker = k.query_public('Ticker', req = {'pair': tpair})
-
         while True:
-            harga = (balance * 0.95 * leverage) / float(ticker['result'][tpair]['c'][0])
-            beli = k.query_private('AddOrder',
-                            {'pair': tpair,
-                             'type': 'sell',
-                             'ordertype': 'market',
-                             'volume': str(harga),
-                             'leverage': str(leverage)})
+            ticker = k.query_public('Ticker', req = {'pair': tpair})
             time.sleep(1)
-            if len(beli['error']) == 0:
+
+            while True:
+                harga = (balance * 0.95 * leverage) / float(ticker['result'][tpair]['c'][0])
+                beli = k.query_private('AddOrder',
+                                {'pair': tpair,
+                                 'type': 'sell',
+                                 'ordertype': 'market',
+                                 'volume': str(harga),
+                                 'leverage': str(leverage)})
+                time.sleep(1)
+                if len(beli['error']) == 0:
+                    break
+
+            ## Delay, then recheck with kraken
+            ## Insufficient Margin from kraken are not fun
+            time.sleep(10)
+            cekopenpos()
+            if statusPosition == 1:
                 break
 
-    statusPosition = 1
+    if testing != 0:
+        statusPosition = 1
 
 ## Act based on strategy result
 def decide(order, pos):
